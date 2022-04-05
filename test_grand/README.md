@@ -1,4 +1,4 @@
-#Grand
+# Grand
 
 Provided in (https://github.com/caisr-hh/group-anomaly-detection)
 
@@ -7,7 +7,7 @@ In order to implement 2-Stage algoprithm some modification are made in grand pac
 #expiriments
 Use TestGrand.py to run expirements for Turbofan or Bus Dataset.
 
-# PARAMETERS 
+## PARAMETERS 
 filename: "vehicles" or "f0001","f0002","f0003","f0004"  filename of dataset to use.
 non_k: k for lof or knn metric
 metric: "median","knn","lof"  non-conformity measure used for strangeness
@@ -22,6 +22,6 @@ Otherwise for Turbofan dataset use the senarioCost() function.
 For every test the hyperparameters and the resulted cost is stored in txt file (diferent for each dataset). 
 
 
-#readRuslts
+## readRuslts
 
 This file is used in order to plot the best cost achived by the method.
