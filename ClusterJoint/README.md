@@ -1,6 +1,6 @@
 ## ClusterJoint method
 
-Implementation of (link to paper) with modifications in order to fit in streaming data.
+Implementation of (https://link.springer.com/article/10.1007/s13349-016-0160-0) with modifications in order to fit in streaming data.
 
 ## Expiriments
 
