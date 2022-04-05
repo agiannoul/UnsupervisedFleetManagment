@@ -1,10 +1,10 @@
-#2Stage 
+# 2Stage 
 
 2Stage is an aproach of Grand method using a post processing step
 
 In order to implement 2-Stage algoprithm some modification are made in grand package.
 
-#expiriments
+# Expiriments
 Use HybridTestFP.py to run expirements for Turbofan or Bus Dataset.
 
 # PARAMETERS 
@@ -24,6 +24,6 @@ Otherwise for Turbofan dataset use the senarioCost() function.
 For every test the hyperparameters and the resulted cost is stored in txt file (diferent for each dataset). 
 
 
-#readRuslts
+# readRuslts
 
 This file is used in order to plot the best cost achived by the method.
