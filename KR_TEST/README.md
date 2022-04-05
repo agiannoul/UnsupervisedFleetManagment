@@ -2,7 +2,8 @@
 
 A distance based method using k and R to determine anomalies
 
-#expiriments
+# expiriments
+
 Use krTestCode.py to run expirements for Turbofan or Bus Dataset.
 
 # PARAMETERS 
@@ -23,6 +24,6 @@ Otherwise for Turbofan dataset use the runsenarioCost() function.
 For every test the hyperparameters and the resulted cost is stored in txt file (diferent for each dataset). 
 
 
-#readRuslts
+# readRuslts
 
 This file is used in order to plot the best cost achived by the method.
