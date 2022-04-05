@@ -2,7 +2,7 @@
 
 Implementation of (link to paper) with modifications in order to fit in streaming data.
 
-# expiriments
+# Expiriments
 
 Use ClusterJoint.py to run expirements for Turbofan or Bus Dataset.
 
