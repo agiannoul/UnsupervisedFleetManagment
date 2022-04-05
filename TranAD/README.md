@@ -1,11 +1,12 @@
-#TranAD 
+# TranAD 
 
 Provided in (https://github.com/imperial-qore/TranAD.git)
+TranAD model with modifications to fit in streaming data.
 
-#expiriments
+# Expiriments
 Use fleetTranAD.py to run expirements for Turbofan or Bus Dataset.
 
-# PARAMETERS 
+## PARAMETERS 
 
 In main section you can use test_forBussed() or test_for_f000(filename,factor) to test expiriments.
 
@@ -18,6 +19,6 @@ factor: factor based on which the threshold is calculated
 In test_forBussed() factor parameter is missing, because we test several factors with one pass.
 
 
-#readRuslts
+## readRuslts
 
 This file is used in order to plot the best cost achived by the method.
