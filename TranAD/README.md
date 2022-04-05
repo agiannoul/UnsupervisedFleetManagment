@@ -3,7 +3,7 @@
 Provided in (https://github.com/imperial-qore/TranAD.git)
 TranAD model with modifications to fit in streaming data.
 
-# Expiriments
+## Expiriments
 Use fleetTranAD.py to run expirements for Turbofan or Bus Dataset.
 
 ## PARAMETERS 
