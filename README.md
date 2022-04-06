@@ -3,7 +3,7 @@
 ## Methods:
 TranAD folder : TranAD method.
 
-HybridTest folder: 2Stage method.
+HybridTest folder: 2Stage method. In order to run 2Stage method, you will need to use our version of Grand package, which is provided under the grand folder.
 
 ClusterJoint folder: ClusterJoint method in paper.
 
