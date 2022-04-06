@@ -11,6 +11,8 @@ KR_TEST folder: distance-based outlier detection method (brute force is used for
 
 test_grand folder: Grand method. Group Anomaly Detection algotrithm used in paper as baseline.
 
+Each folder contains a README file fo further explaination of the parameters and methods.
+
 ## Fleet dataset construction (Turbofan C-MPAS data)
 
 In CreateFleetDataset folder are the raw data and four notebooks to produce a fleet dataset using them.
