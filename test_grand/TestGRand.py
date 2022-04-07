@@ -322,7 +322,23 @@ def calculateCostBus(ids_target_units,model,thh):
             Cost.append(cost)
         phcost.append(Cost)
     return phcost
-
+def plotgrand(model,ids_target_units,thh):
+    fig, axis = plt.subplots(len(ids_target_units))
+    c=0
+    for uid in ids_target_units:
+        #busses=["369","370","371","372","373","374","375","376","377","378","379","380","381","382","383","452","453","454","455"]
+        axis[c].set_ylabel(uid)
+        axis[c].set_ylim(0, 1)
+        T, P, M ,thresh,deviatingvalues,deviatingTimes,_,_=model.get_information(uid)
+        deviatingTimes=[t[0] for t in zip(T,M) if t[1]>thh ]
+        deviatingValues=[t[1] for t in zip(T,M) if t[1]>thh ]
+        if True:
+            axis[c].plot(T, M)
+            if True:#self.dynamic_threshold:
+                axis[c].scatter(deviatingTimes, deviatingValues, color="red")
+        if False:
+            axis[c].axhline(y=thresh, color='r', linestyle='--', label="Threshold")
+        c+=1
 
 def calculateCost(ids_target_units,model,thh):
     fpcost=1
@@ -368,9 +384,10 @@ def senario(filename,non_k,metric,Reference_window,w_mart,normalized):
 def senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized):
     model,ids_target_units=runGrand(filename,non_k,metric,Reference_window,w_mart,normalized)
     #plotmodel(model)
-    for thh in [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    for thh in [0.7]:
         Cost=calculateCost(ids_target_units,model,thh)
         #print(Cost)
+        plotgrand(model,ids_target_units,thh)
         towrite=[filename,non_k,metric,Reference_window,w_mart,normalized,thh,Cost]
         with open(f'{filename}_GRAND_RESULTS_Cost.txt', 'a') as f:
             for item in towrite:
@@ -402,9 +419,9 @@ def checkIFexpirimentExist(filename,non_k,metric,Reference_window,w_mart,normali
             if listline[0]==filename and listline[1]==str(non_k) and listline[2]==str(metric) and listline[3]==str(Reference_window) and listline[4]==str(w_mart) and listline[5]==str(normalized):
                 return True
 ###### PARAMETERS ##############
-filename="vehicles" #filename of expirement
+filename="f0001" #filename of expirement
 non_k=20 # k for lof or knn metric
-metric="lof" # non-conformity measure (median,knn,lof)
+metric="median" # non-conformity measure (median,knn,lof)
 Reference_window="15days" #Peer Group in days
 w_mart = 15         # Window size for computing the deviation level
 normalized=False
@@ -412,21 +429,21 @@ if metric=="median":
     non_k=0
 ################################
 counterrun=0
-#senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized)
+senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized)
 
 
 #senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized)
 
 
 
-for metricc in ["median"]: #"lof"
-         for k in [0]:
-             for days in ["7days","15days","30days"]:
-                 metric=metricc
-                 non_k=k
-                 Reference_window=days
-                 print(str(metric)+" "+str(non_k)+" "+str(Reference_window))
-                 senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized)
+#for metricc in ["median"]: #"lof"
+#         for k in [0]:
+#             for days in ["7days","15days","30days"]:
+#                 metric=metricc
+#                 non_k=k
+#                 Reference_window=days
+#                 print(str(metric)+" "+str(non_k)+" "+str(Reference_window))
+#                 senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized)
 
 
 
