@@ -13,7 +13,7 @@ test_grand folder: Grand method. Group Anomaly Detection algotrithm used in pape
 
 Each folder contains a README file fo further explaination of the parameters and methods.
 
-Under the grand folder contains the modified library of Grand method.
+grand folder contains the modified library of Grand method.
 ## Fleet dataset construction (Turbofan C-MPAS data)
 
 In CreateFleetDataset folder are the raw data and four notebooks to produce a fleet dataset using them.
