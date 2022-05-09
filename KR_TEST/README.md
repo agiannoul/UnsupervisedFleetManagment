@@ -1,4 +1,4 @@
-# KR method
+# DOD method
 
 A distance based method using k and R to determine anomalies
 
