@@ -7,7 +7,7 @@ HybridTest folder: 2Stage method. In order to run 2Stage method, you will need t
 
 ClusterJoint folder: ClusterJoint method in paper.
 
-KR_TEST folder: distance-based outlier detection method (brute force python implementation of MCOD, you can find faster implementation in java here: https://infolab.usc.edu/Luan/Outlier/)
+KR_TEST folder: distance-based outlier detection method (brute force python implementation of MCOD, you can find faster implementation in java here: https://infolab.usc.edu/Luan/Outlier/) reffered as DOD in paper.
 
 test_grand folder: Grand method. Group Anomaly Detection algotrithm used in paper as baseline.
 
