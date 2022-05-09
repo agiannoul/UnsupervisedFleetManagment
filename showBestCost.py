@@ -69,7 +69,7 @@ for PH in Phrange:
         Cluster_cost.append(costcluster)
         
         
-    axs[c].plot(COSTS,KR_cost,marker='o',label="KR")
+    axs[c].plot(COSTS,KR_cost,marker='o',label="DOD")
     axs[c].plot(COSTS,Hybrid_cost,marker='s',label="2Stage")
     axs[c].plot(COSTS,Cluster_cost,marker='p',label="ClusterJoint")
     axs[c].plot(COSTS,Grand_cost,marker='*',label="Grand")
