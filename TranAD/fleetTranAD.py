@@ -55,7 +55,7 @@ def load_dataset(train, test, label):
 
 
 def save_model(model, optimizer, scheduler, epoch, accuracy_list):
-    folder = f'checkpoints/{args.model}_{args.dataset}/'
+    folder = f'checkpoints/{"TranAD"}_{"ignore"}/'
     os.makedirs(folder, exist_ok=True)
     file_path = f'{folder}/model.ckpt'
     torch.save({
@@ -72,7 +72,7 @@ def load_model(modelname, dims):
     model = model_class(dims).double()
     optimizer = torch.optim.AdamW(model.parameters(), lr=model.lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5, 0.9)
-    fname = f'checkpoints/{args.model}_{args.dataset}/model.ckpt'
+    fname = f'checkpoints/{"TranAD"}_{"ignore"}/model.ckpt'
 
     if True:
         print(f"{color.GREEN}Creating new model: {model.name}{color.ENDC}")
@@ -186,6 +186,7 @@ def factorcalculation(distances,factor):
     stdofTrain = statistics.stdev(tempdist2)
     thmean = meanofTrain + factor * stdofTrain
     return thmean
+
 def addoutliers(listoToadd,distancesTarget,datess,thmean):
     ccc = 0
     for d in distancesTarget:
@@ -193,6 +194,9 @@ def addoutliers(listoToadd,distancesTarget,datess,thmean):
             listoToadd.append(datess.index[ccc])
         ccc += 1
     return listoToadd
+
+#run proposed TranAd anomaly detection in fleet data using sliding winodw
+# We test multiple factors for threshold at one run.
 def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs):
     outliersfactor2 = [[] for i in range(len(dataframes_list))]
     outliersfactor3 = [[] for i in range(len(dataframes_list))]
@@ -236,6 +240,7 @@ def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs)
 
             TestX = windowref2.to_numpy()
             Target = dataframes_list[uid][start:end].to_numpy()
+            # this was used to plot data after pca
             if False and uid==0 and len(Target)>0:
                 pca = decomposition.PCA(n_components=10)
 
@@ -252,6 +257,7 @@ def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs)
                 plt.plot(ToPlot[:, 0], ToPlot[:, 1], "ro")
                 plt.plot(ToplotTarget[:,0],ToplotTarget[:,1], "bo")
                 plt.show()
+            #plot hierarhical clustering dendrogram
             if False:
                 hierarhical(TrainX)
             if len(Target) == 0:
@@ -347,141 +353,10 @@ def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs)
             # plt.show()
     return outliersfactor2,outliersfactor3,outliersfactor4,outliersfactor5,outliersfactor6,outliersfactor7
 
-def detection(window, shiftdays, dataframes_list, indexes, factor):
-    numberOfwindows = int(450 / shiftdays)
-    # start=
-    outliers = [[] for i in range(len(dataframes_list))]
 
-    for w in range(numberOfwindows):
-        print("ITERATION:", w)
-        start = datetime.strptime("2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S") + dtime.timedelta(days=w * shiftdays)
-        middle = start + dtime.timedelta(days=shiftdays)
-        end = start + dtime.timedelta(days=window)
-        # dataframes_list[0][start:end]
-        for uid in indexes:
-            if uid == 0:
-                windowref = dataframes_list[1][start:middle]
-                windowref2 = dataframes_list[1][middle:end]
-                startIndex = 2
-            else:
-                windowref = dataframes_list[0][start:middle]
-                windowref2 = dataframes_list[0][middle:end]
-
-                startIndex = 1
-            for j in range(startIndex, len(dataframes_list)):
-                if j != uid:
-                    windowref = pd.concat([windowref, dataframes_list[j][start:middle]])
-                    windowref2 = pd.concat([windowref2, dataframes_list[j][middle:end]])
-
-            TrainX = windowref.to_numpy()
-
-            TestX = windowref2.to_numpy()
-            Target = dataframes_list[uid][start:end].to_numpy()
-
-            # pca = decomposition.PCA(n_components=2)
-
-            # pca.fit(TrainX)
-            # ToPlot =pca.transform(TrainX)
-            # ToplotTarget=pca.transform(Target)
-            # print(ToPlot.shape)
-            # print(ToplotTarget.shape)
-
-            # figure(figsize=(3, 3), dpi=160)
-            # plt.plot(ToPlot[:, 0], ToPlot[:, 1], "ro")
-            # plt.plot(ToplotTarget[:,0],ToplotTarget[:,1], "bo")
-            # plt.show()
-            if False:
-                hierarhical(TrainX)
-            if len(Target) == 0:
-                continue
-
-            scaler = MinMaxScaler()
-            scaler.fit(TrainX)
-            TrainX = scaler.transform(TrainX)
-            TestX = scaler.transform(TestX)
-            Target = scaler.transform(Target)
-
-            train_loader, test_loader, labels = load_dataset(TrainX, TestX, Target)
-            mymodel = "TranAD"
-            model, optimizer, scheduler, epoch, accuracy_list = load_model(mymodel, len(TrainX[0]))
-            ## Prepare data
-            trainD, testD, targetD = next(iter(train_loader)), next(iter(test_loader)), next(iter(labels))
-            trainO, testO, target0 = trainD, testD, targetD
-
-            trainD, testD, targetD = convert_to_windows(trainD, model), convert_to_windows(testD,
-                                                                                           model), convert_to_windows(
-                targetD, model)
-            ###### TRAINING
-            # print(f'{color.HEADER}Training {args.model} on {args.dataset}{color.ENDC}')
-            num_epochs = 5;
-            e = epoch + 1;
-            for e in tqdm(list(range(epoch + 1, epoch + num_epochs + 1))):
-                lossT, lr = backprop(e, model, trainD, trainO, optimizer, scheduler)
-                accuracy_list.append((lossT, lr))
-            # print(color.BOLD + 'Training time: ' + "{:10.4f}".format(time() - start) + ' s' + color.ENDC)
-            save_model(model, optimizer, scheduler, e, accuracy_list)
-            # plot_accuracies(accuracy_list, f'{args.model}_{args.dataset}')
-            torch.zero_grad = True
-            model.eval()
-            # print(f'{color.HEADER}Testing {args.model} on {args.dataset}{color.ENDC}')
-            loss, y_pred = backprop(0, model, testD, testO, optimizer, scheduler, training=False)
-
-            distances = []
-            for pred, y_test in zip(y_pred, testO):
-                sum = 0
-                for i in range(len(pred)):
-                    dist = abs(pred[i] - y_test[i])
-                    sum += abs(dist)
-                distances.append(float(sum / len(pred)))
-            testlen = len(distances)
-            distancesTest = distances
-            startind = len(TrainX)
-            trainsize = len(TrainX)
-
-            meanofTrain = statistics.mean(distances)
-            stdofTrain = statistics.stdev(distances)
-            thmean = meanofTrain + factor * stdofTrain
-            tempdist2 = []
-            for d in distancesTest:
-                if d <= meanofTrain + factor * stdofTrain:
-                    tempdist2.append(d)
-            meanofTrain = statistics.mean(tempdist2)
-            stdofTrain = statistics.stdev(tempdist2)
-            thmean = meanofTrain + factor * stdofTrain
-            loss, y_pred = backprop(0, model, targetD, target0, optimizer, scheduler, training=False)
-            mmmeans = []
-            outlier = []
-            indecout = []
-            c = -1
-            distances = []
-            for pred, ori in zip(y_pred, target0):
-                c += 1
-                sum = 0
-                for i in range(len(pred)):
-                    dist = abs(pred[i] - ori[i])
-                    sum += abs(dist)
-                distances.append(abs(float(sum) / len(ori)))
-                # print(distances)
-                # mnow = statistics.mean(distances[-min(trainsize,len(distances)):])
-                # mmmeans.append(mnow)
-                # if mnow >= thmean:
-                #    outliers[uid].append(dataframes_list[uid][start:end].index[c])
-                # print("OUTLIER:")
-                # print(dataframes_list[uid][start:end].index[c])
-            # for f0001 and f0002
-            ccc = 0
-            for d in distances:
-                if d > thmean:
-                    outliers[uid].append(dataframes_list[uid][start:end].index[ccc])
-                ccc += 1
-
-            # figure(figsize=(3, 3), dpi=160)
-            # plt.plot([c for c in range(len(distancesTest))], distancesTest, "y-")
-            # plt.plot([c for c in range(testlen,testlen+len(distances))], distances, "b-")
-            # plt.plot([c for c in range(0,testlen+len(distances))], [thmean for c in range(0,testlen+len(distances))], "r-")
-            # plt.ylim((0, 1))
-            # plt.show()
-    return outliers
+# caculate the distance from a data-point (sample)
+# to all clusters
+# return the cluster with the nearest with the nearest point to sample.
 def distforTest(sample,clusters):
 
     minimum=9999999999999999999999
@@ -494,8 +369,14 @@ def distforTest(sample,clusters):
             minimum=min(dists1[0,:])
         cccc+=1
     return minimumpos
-    dists2=cdist(np.array([sample]), np.array(cluster2), 'euclidean')
+    #dists2=cdist(np.array([sample]), np.array(cluster2), 'euclidean')
     #print(dists2.shape)
+
+
+# Trains TranAd model using TrainX data
+# Calculate threshold using TestX data
+# Calculate reconstruction of Target Data
+# returns threshold, reconstructed Target Data and original Target Data
 def traintestpredict(TrainX,TestX,Target,factor):
     scaler = MinMaxScaler()
     scaler.fit(TrainX)
@@ -552,7 +433,10 @@ def traintestpredict(TrainX,TestX,Target,factor):
     thmean = meanofTrain + factor * stdofTrain
     loss, y_pred = backprop(0, model, targetD, target0, optimizer, scheduler, training=False)
     return  thmean,y_pred,target0
-def detectionulticluster(window, shiftdays, dataframes_list, indexes, factor):
+
+# TranAD anomaly detection using sliding window.
+# clusterToUse parameter define how many clusters will bew used for clustering before training phase of TranAd
+def detectionulticluster(window, shiftdays, dataframes_list, indexes, factor,clusterToUse):
     numberOfwindows = int(450 / shiftdays)
     # start=
     outliers = [[] for i in range(len(dataframes_list))]
@@ -583,7 +467,7 @@ def detectionulticluster(window, shiftdays, dataframes_list, indexes, factor):
             TestX = windowref2.to_numpy()
             Target = dataframes_list[uid][start:end].to_numpy()
 
-            clustering = AgglomerativeClustering(n_clusters=6).fit(TrainX)
+            clustering = AgglomerativeClustering(n_clusters=clusterToUse).fit(TrainX)
             clusters=[ [] for _ in np.unique(clustering.labels_)]
             Testclusters=[ [] for _ in np.unique(clustering.labels_)]
             Targetclusters=[ [] for _ in np.unique(clustering.labels_)]
@@ -694,7 +578,7 @@ def plotResultsBus(outliers, dataframes_list, indexesforgrand):
     # print(tempdf.index[-1])
     # score
 
-
+# used when we plot results for Bus Dataset to plot lines when failure occur
 def plotLines(ax, uid, path="busFailures/"):
     busses = ["369", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383",
               "452", "453", "454", "455"]
@@ -745,6 +629,8 @@ def plotLines(ax, uid, path="busFailures/"):
     for out in Blueoutlier:
         ax.axvline(out, color='royalblue', dashes=[2, 2])
 
+
+# Calculate costs for multiple Predctive horizon and FN cost (fleet Trubofan Dataset).
 def calculateCost(outliers, dataframes_list, indexesforgrand):
     fpcost = 1
     fncost = 10
@@ -791,7 +677,8 @@ def calculateCost(outliers, dataframes_list, indexesforgrand):
         phcost.append(Cost)
     return phcost
 
-
+# In bus Dataset we have multiple types of failures (which has different cost),
+# this function find for each class of failure the false positives and True positives
 def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, BlueDashFnCost, TpCost, FpCost):
     busses = ["369", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383",
               "452", "453", "454", "455"]
@@ -884,6 +771,9 @@ def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, B
 
     return cost
 
+
+
+#plot dendogram of hierarhical clustering results
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
@@ -906,6 +796,7 @@ def plot_dendrogram(model, **kwargs):
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
 
+#run hierarchical clustering and show dendogram results
 def hierarhical(X):
 
 
@@ -922,6 +813,8 @@ def hierarhical(X):
     plt.tick_params(axis='x', which='minor', labelsize=2)
 
     plt.show()
+
+# Calculate costs for multiple Predctive horizon and FN cost (fleet bus Dataset).
 def calculateCostBus(outliers, dataframes_list, indexesforgrand):
     fpcost = 1
     fncost = 10
@@ -958,6 +851,7 @@ def calculateCostBus(outliers, dataframes_list, indexesforgrand):
         phcost.append(Cost)
     return phcost
 
+# Used to run TranAd in turbofan fleet Dataset
 def test_for_f000(filename="f0001",factor=2):
     f001 = [32, 15, 50, 68, 24, 16, 59, 13, 47, 49, 74, 58, 44, 41]
     f002 = [155, 247, 102, 89, 62, 9, 209, 221, 190, 87, 116, 18, 110, 98, 150, 10, 35, 41, 65, 34, 21, 196, 144, 245,
@@ -968,21 +862,26 @@ def test_for_f000(filename="f0001",factor=2):
 
     # parameters
     # filename = "f0003"
+    clusterToUse=1
     if filename == "f0001":
         indexesforgrand = f001
+        clusterToUse=1
     elif filename == "f0002":
         indexesforgrand = f002
+        clusterToUse=6
     elif filename == "f0003":
         indexesforgrand = f003
+        clusterToUse=1
     elif filename == "f0004":
         indexesforgrand = f004
+        clusterToUse=6
 
     shiftdays = 20
     window = 40
     #[[249, 269, 349, 429, 629], [145, 165, 245, 325, 525], [93, 113, 193, 273, 473]]
     #[[169, 184, 244, 304, 454], [95, 110, 170, 230, 380], [63, 78, 138, 198, 348]]f0003_TranAD_COST.txt
     dataframes_list = loaddflist(filename)
-    outliers = detectionulticluster(window, shiftdays, dataframes_list, indexesforgrand, factor)
+    outliers = detectionulticluster(window, shiftdays, dataframes_list, indexesforgrand, factor,clusterToUse)
     #plotResults(outliers, dataframes_list, indexesforgrand)
 
     Cost = calculateCost(outliers, dataframes_list, indexesforgrand)
@@ -993,7 +892,7 @@ def test_for_f000(filename="f0001",factor=2):
             f.write("%s | " % item)
         f.write("\n")
 
-
+# Used to run TranAd in Bus fleet Dataset
 def test_forBussed():
     filename = "vehicles"
     indexesforgrand = [0, 1, 3, 4, 9, 11, 12, 13, 14]  # ids of busses where used in our case
@@ -1016,6 +915,6 @@ def test_forBussed():
                 f.write("%s | " % item)
             f.write("\n")
 if __name__ == '__main__':
-    #for factorr in [2,2.5,1.8]:
-    #    test_for_f000("f0001",factorr)
+    #factorr=3
+    #test_for_f000("f0001",factorr)
     test_forBussed()

@@ -21,6 +21,8 @@ from math import sqrt
 from sklearn.neighbors import NearestNeighbors
 import statistics
 import re
+
+
 # X is an array of samples.
 def outlier_removal(X,thstop=-1,count=0):
     #k is all X for now, in original paper k was parameter
@@ -184,7 +186,9 @@ def plotLines(ax, uid, path="busFailures/"):
 
 
 
-
+# Anomaly detection using "ClusterJoint" technique in Fleet Turbofan Dataset
+# Represent as cluster each mebmer of fleet , perform outlier detection
+# and find centers of cluster which are far away from the others
 
 def detection(window,shiftdays,dataframes_list,factor):
     numberOfwindows=int(450/shiftdays)
@@ -253,7 +257,9 @@ def detection(window,shiftdays,dataframes_list,factor):
         
     return distances_ID,TimeIndex
 
-
+# Anomaly detection using "ClusterJoint" technique in bus Dataset
+# Represent as cluster each mebmer of fleet , perform outlier detection
+# and find centers of cluster which are far away from the others
 def detectionBus(window,shiftdays,dataframes_list,factor):
     minlist=[ dfff.index.min() for dfff in dataframes_list]
     #print(minlist)
@@ -326,67 +332,6 @@ def detectionBus(window,shiftdays,dataframes_list,factor):
         
     return distances_ID,TimeIndex
 
-def tp_fp(outliers,dataframes_list,indexesforgrand):
-    ccc=0
-    PhRange=[i* 5 for i in range(1,14)]
-    plt.figure(2)
-    F1=[]
-    PR=[]
-    RE=[]
-    for PH in PhRange:
-        tp=0
-        fp=0
-        fn=0
-        for i in indexesforgrand:
-            # plot
-            ccc+=1
-            tempdf=dataframes_list[i]
-            outs=outliers[i]
-            outs.sort()
-            x = np.array(outs)
-            outsfinal=np.unique(x)
-            dubleouts=[]
-            
-            ##### SOS #####
-            # PAIRNW TA DIPLA
-            #for ooo in x:
-            #    if outs.count(ooo)>1:
-            #        dubleouts.append(ooo)
-            #outsfinal=dubleouts
-            finalDate=tempdf.index[-1]
-            #print(tempdf.index[-1])
-            #score
-            for oo in outsfinal:
-                if (finalDate-oo).days <PH:
-                    tp+=1
-                else:
-                    fp+=1
-            for d in tempdf.index:
-                if (finalDate-d).days <PH and d not in outsfinal:
-                    fn+=1
-        #print(tp)
-        #print(fp)
-        #print(fn)
-        if tp+fp==0:
-            precision=0
-        else:
-            precision=tp/(tp+fp)
-        
-        if tp+fn==0:
-            recall=0
-        else:
-            recall=tp/(tp+fn)
-        
-        if precision+recall==0:
-            f1=0
-        else:
-            f1=2*(precision*recall)/(precision+recall)
-        F1.append(f1)
-        PR.append(precision)
-        RE.append(recall)
-    return F1,PR,RE
-
-
 
 def plotOutliers(TimeIndex,dataframes_list,indexesforgrand):
     c=0
@@ -396,6 +341,8 @@ def plotOutliers(TimeIndex,dataframes_list,indexesforgrand):
             plt.plot(tempdf.index, [c for q in range(len(tempdf.index))],"-b")
             plt.plot(TimeIndex[uid], [c for i in range(len(TimeIndex[uid]))],"r.")
         c+=1
+
+
 def plotResults(distances,TimeIndex,dataframes_list,indexesforgrand):
     fig, axis = plt.subplots(len(indexesforgrand))
     c=0
@@ -406,6 +353,8 @@ def plotResults(distances,TimeIndex,dataframes_list,indexesforgrand):
             axis[c].plot(TimeIndex[uid], distances[uid])
         c+=1
 
+
+# Calculate costs for multiple Predctive horizon and FN cost (fleet Trubofan Dataset).
 def calculateCost(outliers,dataframes_list,indexesforgrand):
     fpcost=1
     fncost=10
@@ -446,6 +395,9 @@ def calculateCost(outliers,dataframes_list,indexesforgrand):
         phcost.append(Cost)
     return phcost
 
+
+# In bus Dataset we have multiple types of failures (which has different cost),
+# this function find for each class of failure the false positives and True positives
 def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, BlueDashFnCost, TpCost, FpCost):
     busses = ["369", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383",
               "452", "453", "454", "455"]
@@ -539,7 +491,7 @@ def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, B
     return cost
 
 
-
+# Calculate costs for multiple Predctive horizon and FN cost (fleet bus Dataset).
 def calculateCostBus(outliers,dataframes_list,indexesforgrand):
     fpcost=1
     fncost=10
@@ -584,7 +536,7 @@ def calculateCostBus(outliers,dataframes_list,indexesforgrand):
 
 
 
-
+# Run Bus Dataset
 def runsenarioCostBus(filename,w,step,SDfactor):
     indexesforgrand=[0,1,3,4,9,11,12,13,14]
     dataframes_list=loaddflistBus(filename)
@@ -602,6 +554,8 @@ def runsenarioCostBus(filename,w,step,SDfactor):
         for item in towrite:
             f.write("%s | " % item)
         f.write("\n" % item)
+
+# Run Fleet Turbofan dataset
 def runsenarioCost(filename,w,step,SDfactor):
     
     indexesforgrand=load_id(filename)
@@ -634,27 +588,14 @@ def load_id(filename="f0001"):
         indexesforgrand=f004
     return indexesforgrand
 
-filename=="vehicles"
-w=10
+filename="f0001"
+w=15
 step=1
 SDfactor=3
 
 
-ccccc=0
-for w in [20,30,40]:
-    for SDfactor in [1.75,2,2.5,3,4]:
-        ccccc+=1
-        runsenarioCostBus(filename,w,step,SDfactor)
-        print(ccccc)
-
-
-# ccccc=0
-# for w in [10,20,30,40]:
-#     for SDfactor in [1.75,2,2.5,3,4]:
-#         ccccc+=1
-#         runsenarioCost(filename,w,step,SDfactor)
-#         print(ccccc)
-
+#runsenarioCostBus(filename,w,step,SDfactor)
+runsenarioCost(filename,w,step,SDfactor)
 
 
 

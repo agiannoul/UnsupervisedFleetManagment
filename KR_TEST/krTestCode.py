@@ -51,6 +51,7 @@ def loaddflistBus(filename="vehicles"):
         dataframes_list.append(temp_df)
     print(len(dataframes_list))
     return dataframes_list
+
 def loaddflist(filename="f0001"):
     data_path="../"+filename+"/"
     files_csv = sorted([ join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f)) ])
@@ -71,6 +72,8 @@ def loaddflist(filename="f0001"):
     return dataframes_list
     #dataframes_list[0].head()
 
+
+# Distance-based outlier detection, using Bus dataset
 def detectionBus(window,shiftdays,k,R,dataframes_list):
     
     outliers=[ [] for i in range(len(dataframes_list))]
@@ -102,6 +105,7 @@ def detectionBus(window,shiftdays,k,R,dataframes_list):
                     outliers[i].append(currentindex.iloc[q].name)
     return outliers
 
+# Distance-based outlier detection, using Turbofan dataset
 def detection(window,shiftdays,k,R,dataframes_list):
     numberOfwindows=int(450/shiftdays)
     #start=
@@ -146,6 +150,8 @@ def plotResults(outliers,dataframes_list,indexesforgrand):
         plt.plot(dubleouts, [ccc for q in range(len(dubleouts))],"y.")
         #print(tempdf.index[-1])
         #score
+
+
 def plotResultsBus(outliers, dataframes_list, indexesforgrand):
     ccc = 0
     fig, axis = plt.subplots(len(indexesforgrand))
@@ -176,7 +182,7 @@ def plotResultsBus(outliers, dataframes_list, indexesforgrand):
 
 
 
-
+# used when we plot results for Bus Dataset to plot lines when failure occur
 def plotLines(ax, uid, path="busFailures/"):
     busses = ["369", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383",
               "452", "453", "454", "455"]
@@ -229,78 +235,7 @@ def plotLines(ax, uid, path="busFailures/"):
 
 
 
-
-
-
-
-
-def tp_fp(outliers,dataframes_list,indexesforgrand):
-    ccc=0
-    PhRange=[i* 5 for i in range(1,14)]
-    plt.figure(2)
-    F1=[]
-    PR=[]
-    RE=[]
-    for PH in PhRange:
-        tp=0
-        fp=0
-        fn=0
-        for i in indexesforgrand:
-            # plot
-            ccc+=1
-            tempdf=dataframes_list[i]
-            outs=outliers[i]
-            outs.sort()
-            x = np.array(outs)
-            outsfinal=np.unique(x)
-            dubleouts=[]
-            
-            ##### SOS #####
-            # PAIRNW TA DIPLA
-            for ooo in x:
-                if outs.count(ooo)>1:
-                    dubleouts.append(ooo)
-            outsfinal=dubleouts
-            finalDate=tempdf.index[-1]
-            #print(tempdf.index[-1])
-            #score
-            for oo in outsfinal:
-                if (finalDate-oo).days <PH:
-                    tp+=1
-                else:
-                    fp+=1
-            for d in tempdf.index:
-                if (finalDate-d).days <PH and d not in outsfinal:
-                    fn+=1
-        #print(tp)
-        #print(fp)
-        #print(fn)
-        if tp+fp==0:
-            precision=0
-        else:
-            precision=tp/(tp+fp)
-        
-        if tp+fn==0:
-            recall=0
-        else:
-            recall=tp/(tp+fn)
-        
-        if precision+recall==0:
-            f1=0
-        else:
-            f1=2*(precision*recall)/(precision+recall)
-        F1.append(f1)
-        PR.append(precision)
-        RE.append(recall)
-    
-    
-    #plt.plot(PhRange, F1,label="F1")
-    #plt.plot(PhRange, PR,label="Prec")
-    #plt.plot(PhRange, RE,label="Rec")
-    #plt.legend()
-    
-    return F1,PR,RE
-
+# Calculate costs for multiple Predctive horizon and FN cost (fleet Trubofan Dataset).
 def calculateCost(outliers,dataframes_list,indexesforgrand):
     fpcost=1
     fncost=10
@@ -347,7 +282,8 @@ def calculateCost(outliers,dataframes_list,indexesforgrand):
         phcost.append(Cost)
     return phcost
 
-
+# In bus Dataset we have multiple types of failures (which has different cost),
+# this function find for each class of failure the false positives and True positives
 def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, BlueDashFnCost, TpCost, FpCost):
     busses = ["369", "370", "371", "372", "373", "374", "375", "376", "377", "378", "379", "380", "381", "382", "383",
               "452", "453", "454", "455"]
@@ -443,7 +379,7 @@ def redAndBLueOutliers(reported, path, uid, PH, redSolidFnCost, redDashFnCost, B
 
 
 
-
+# Calculate costs for multiple Predctive horizon and FN cost (fleet bus Dataset).
 def calculateCostBus(outliers,dataframes_list,indexesforgrand):
     fpcost=1
     fncost=10
@@ -486,38 +422,9 @@ def calculateCostBus(outliers,dataframes_list,indexesforgrand):
         phcost.append(Cost)
     return phcost
 
-def runsenario(filename,shiftdays,window,k,R,normalized):
-    f002 =[155, 247, 102, 89, 62, 9, 209, 221, 190, 87, 116, 18, 110, 98, 150, 10, 35, 41, 65, 34, 21, 196, 144, 245, 143]
-    f001 =[32, 15, 50, 68, 24, 16, 59, 13, 47, 49, 74, 58, 44, 41]
-    f003 =[98, 88, 6, 61, 8, 90, 25, 87, 74, 29, 62, 17, 22, 63, 7, 65, 77]
-    f004 =[111, 48, 107, 34, 1, 47, 204, 157, 46, 196, 67, 162, 25, 63, 172, 223, 176, 17, 187, 100, 82, 2, 136, 20, 139, 221, 195, 105, 179, 96, 220]
-    if filename=="f0001":
-        indexesforgrand=f001
-    elif filename=="f0002":
-        indexesforgrand=f002
-    elif filename=="f0003":
-        indexesforgrand=f003
-    elif filename=="f0004":
-        indexesforgrand=f004
 
-    dataframes_list=loaddflist(filename)
 
-    if normalized:
-        dataframes_list=normalize(dataframes_list, with_mean=True, with_std=True)
-
-    outliers=detection(window,shiftdays,k,R,dataframes_list)
-
-    plotResults(outliers,dataframes_list,indexesforgrand)
-
-    F1,PR,RE=tp_fp(outliers,dataframes_list,indexesforgrand)
-    
-    #print(max(F1))
-    towrite=[filename,shiftdays,window,k,R,normalized,F1,PR,RE]
-    with open(f'{filename}_KRRESULTS.txt', 'a') as f:
-        for item in towrite:
-            f.write("%s | " % item)
-        f.write("\n" % item)
-
+# Run Fleet Turbofan dataset
 def runsenarioCost(filename,shiftdays,window,k,R,normalized):
     f002 =[155, 247, 102, 89, 62, 9, 209, 221, 190, 87, 116, 18, 110, 98, 150, 10, 35, 41, 65, 34, 21, 196, 144, 245, 143]
     f001 =[32, 15, 50, 68, 24, 16, 59, 13, 47, 49, 74, 58, 44, 41]
@@ -549,7 +456,7 @@ def runsenarioCost(filename,shiftdays,window,k,R,normalized):
             f.write("%s | " % item)
         f.write("\n")
 
-
+# Run Bus Dataset
 def runsenarioCostBus(filename,shiftdays,window,k,R,normalized):
     indexesforgrand=[0,1,3,4,9,11,12,13,14]
 
@@ -572,40 +479,19 @@ def runsenarioCostBus(filename,shiftdays,window,k,R,normalized):
 
 
 
-def checkIFexpirimentExist(filename,shiftdays,window,k,R,normalized):
-    with open(f'{filename}_KRRESULTS.txt') as file:
-        lines = file.readlines()
-        for line in lines:
-            listline=line.split(" | ")[:-1]
-            if listline[0]==filename and listline[1]==str(shiftdays) and listline[2]==str(window) and listline[3]==str(k) and listline[4]==str(R) and listline[5]==str(normalized):
-                return True
-    return False
 ######## PARAMETERS #############
 filename="vehicles"
-shiftdays=20
-window=40
-k=10
-R=1
+shiftdays=20 # shift parameter for time window
+window=40   # length of the time window
+k=15        # parameter k for neighboars
+R=1         # Radius
 normalized=False
 
-
+runsenarioCostBus(filename,shiftdays,window,k,R,normalized)
 #runsenarioCost(filename,shiftdays,window,k,R,normalized)
-for kk in [5,10,15,20,30]:
-    for r in [0.5,1,1.5,2]:
-        print(r,kk)
-        runsenarioCostBus(filename,shiftdays,window,kk,r,normalized)
-###############################
 
-# for filename in ["f0001","f0002","f0003","f0004"]:
-#     for w in [30,40,60]:
-#         shiftdays=w/2
-#         window=w
-#         for kk in [10,12,15,17,20,25,30]:
-#             for r in [5,7,9,11,13,15,17,20]:
-#                 #if checkIFexpirimentExist(filename,shiftdays,window,kk,r,normalized):
-#                 #    continue
-#                 print(r,kk)
-#                 runsenarioCost(filename,shiftdays,window,kk,r,normalized)
+
+
 
 
 
