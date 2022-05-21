@@ -269,7 +269,7 @@ def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs)
             TestX = scaler.transform(TestX)
             Target = scaler.transform(Target)
 
-            pcaBool = True
+            pcaBool = False
             if pcaBool == True:
                 pca = decomposition.PCA(n_components=10)
 
@@ -277,7 +277,10 @@ def detectionBus(window, shiftdays, dataframes_list, indexes, factor,num_epochs)
                 TrainX = pca.transform(TrainX)
                 TestX = pca.transform(TestX)
                 Target = pca.transform(Target)
-
+                sumpca =0
+                for ratio in pca.explained_variance_ratio_:
+                    sumpca+=ratio
+                print(sumpca)
 
             train_loader, test_loader, labels = load_dataset(TrainX, TestX, Target)
             mymodel = "TranAD"
@@ -837,14 +840,7 @@ def calculateCostBus(outliers, dataframes_list, indexesforgrand):
                 outs.sort()
                 x = np.array(outs)
                 outsfinal = np.unique(x)
-                # dubleouts = []
-                #
-                # ##### SOS #####
-                # # PAIRNW TA DIPLA
-                # for ooo in x:
-                #     if outs.count(ooo) > 1:
-                #         dubleouts.append(ooo)
-                # outsfinal = dubleouts
+
                 costofUid=redAndBLueOutliers(outsfinal,"busFailures/",i,PH,redSolidFnCost,redDashFnCost,BlueDashFnCost,TpCost,FpCost)
                 cost += costofUid
             Cost.append(cost)
@@ -904,7 +900,7 @@ def test_forBussed():
     dataframes_list = loaddbusses(filename)
     outliersfactor2, outliersfactor3, outliersfactor4, outliersfactor5, outliersfactor6, outliersfactor7 = detectionBus(window, shiftdays, dataframes_list, indexesforgrand, 2,num_epochs)
 
-    plotResultsBus(outliersfactor5, dataframes_list, indexesforgrand)
+    #plotResultsBus(outliersfactor5, dataframes_list, indexesforgrand)
     Cost = calculateCostBus(outliersfactor5, dataframes_list, indexesforgrand)
     print(Cost)
     for outtt,fact in zip([outliersfactor2,outliersfactor3,outliersfactor4,outliersfactor5,outliersfactor6,outliersfactor7],[2,3,4,5,6,7]):

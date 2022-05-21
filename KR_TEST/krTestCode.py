@@ -259,8 +259,7 @@ def calculateCost(outliers,dataframes_list,indexesforgrand):
                 outsfinal=np.unique(x)
                 dubleouts=[]
                 
-                ##### SOS #####
-                # PAIRNW TA DIPLA
+                #keep outliers shown in both windows
                 for ooo in x:
                     if outs.count(ooo)>1:
                         dubleouts.append(ooo)
