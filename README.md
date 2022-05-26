@@ -17,8 +17,14 @@ Each folder contains a README file fo further explaination of the parameters and
 
 GrandPackage folder contains the modified library of Grand method.
 
-Install the package using "pip install ." or "pip3 install ." inside the folder.
-
+Install the package using 
+```
+pip install .
+```
+or 
+```
+pip3 install .
+```
 
 ## Fleet dataset construction (Turbofan C-MPAS data)
 
