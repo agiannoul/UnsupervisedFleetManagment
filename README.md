@@ -17,7 +17,7 @@ Each folder contains a README file fo further explaination of the parameters and
 
 GrandPackage folder contains the modified library of Grand method.
 
-Install the package using 
+Install the package inside GrandPackage/ folder using 
 ```
 pip install .
 ```
