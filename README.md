@@ -13,7 +13,7 @@ test_grand folder: Grand method. Group Anomaly Detection algotrithm used in pape
 
 Each folder contains a README file fo further explaination of the parameters and methods.
 
-## Install modified grand package
+## Install modified grand package (before run any experiment)
 
 GrandPackage folder contains the modified library of Grand method.
 
