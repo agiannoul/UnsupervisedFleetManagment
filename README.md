@@ -1,7 +1,7 @@
 # A context aware unsupervised predictive maintenance solution for fleet management
 
 ## Methods:
-TranAD folder : TranAD method.
+TranAD folder : TranAD method. (pytorch library is requiered to run)
 
 HybridTest folder: 2Stage method. In order to run 2Stage method, you will need to use our version of Grand package, which is provided under the grand folder.
 
