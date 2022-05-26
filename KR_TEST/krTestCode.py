@@ -34,7 +34,7 @@ def normalize(dfs, with_mean=True, with_std=True):
         return dfs
 
 def loaddflistBus(filename="vehicles"):
-    data_path="../"+filename+"/"
+    data_path="../Dataset/"+filename+"/"
     files_csv = sorted([ join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f)) ])
     file_count = len(files_csv)
     # create empty list
@@ -53,7 +53,7 @@ def loaddflistBus(filename="vehicles"):
     return dataframes_list
 
 def loaddflist(filename="f0001"):
-    data_path="../"+filename+"/"
+    data_path="../Dataset/"+filename+"/"
     files_csv = sorted([ join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f)) ])
     file_count = len(files_csv)
     # create empty list

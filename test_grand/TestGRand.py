@@ -350,7 +350,7 @@ def senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized):
 
 
 ###### PARAMETERS ##############
-filename="vehicles" #filename of expirement
+filename="f0001" #filename of expirement
 non_k=20 # k for lof or knn metric
 metric="median" # non-conformity measure (median,knn,lof)
 Reference_window="15days" #Peer Group in days
@@ -360,6 +360,6 @@ if metric=="median":
     non_k=0
 ################################
 
-#senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized)
-senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized)
+senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized)
+#senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized)
 

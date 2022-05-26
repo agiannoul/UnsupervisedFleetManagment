@@ -53,7 +53,7 @@ def outlier_removal(X,thstop=-1,count=0):
     return outlier_removal(np.array(newX),thstop,count+1)
 
 def loaddflistBus(filename="vehicles"):
-    data_path="../"+filename+"/"
+    data_path="../Dataset/"+filename+"/"
     files_csv = sorted([ join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f)) ])
     file_count = len(files_csv)
     # create empty list
@@ -74,7 +74,7 @@ def loaddflistBus(filename="vehicles"):
 
 
 def loaddflist(filename="f0001"):
-    data_path="../"+filename+"/"
+    data_path="../Dataset/"+filename+"/"
     files_csv = sorted([ join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f)) ])
     file_count = len(files_csv)
     # create empty list
@@ -588,14 +588,14 @@ def load_id(filename="f0001"):
         indexesforgrand=f004
     return indexesforgrand
 
-filename="f0001"
+filename="vehicles"
 w=15
 step=1
 SDfactor=3
 
 
-#runsenarioCostBus(filename,w,step,SDfactor)
-runsenarioCost(filename,w,step,SDfactor)
+runsenarioCostBus(filename,w,step,SDfactor)
+#runsenarioCost(filename,w,step,SDfactor)
 
 
 

@@ -425,7 +425,7 @@ def senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized,R,t
         bestTInTOutCostBus(ids_target_units,model,thh)
 
 ###### PARAMETERS ##############
-filename="f0001" #filename of expirement
+filename="vehicles" #filename of expirement
 non_k=20 # k for lof or knn metric
 metric="lof" # non-conformity measure (median,knn,lof)
 Reference_window="15days" #Peer Group in days
@@ -437,5 +437,5 @@ th=0.5
 R=1
 ################################
 
-#senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized,R,th)
-senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized,R,th)
+senarioCostBuss(filename,non_k,metric,Reference_window,w_mart,normalized,R,th)
+#senarioCost(filename,non_k,metric,Reference_window,w_mart,normalized,R,th)

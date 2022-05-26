@@ -911,6 +911,6 @@ def test_forBussed():
                 f.write("%s | " % item)
             f.write("\n")
 if __name__ == '__main__':
-    #factorr=3
-    #test_for_f000("f0001",factorr)
-    test_forBussed()
+    factorr=3
+    test_for_f000("f0001",factorr)
+    #test_forBussed()
