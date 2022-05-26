@@ -27,6 +27,3 @@ In CreateFleetDataset folder are the raw data and four notebooks to produce a fl
 ## Final cost Results
 
 Use showBestCost.py in order to plot the lowest cost achived by the methods used in expiriements
-
-## Dataset
-Turbofan fleet datasets and bus fleet dataset.
