@@ -33,3 +33,26 @@ In CreateFleetDataset folder are the raw data and four notebooks to produce a fl
 ## Final cost Results
 
 Use showBestCost.py in order to plot the lowest cost achived by the methods used in expiriements
+
+
+# Reference
+
+```
+@Article{Giannoulidis2023,
+author={Giannoulidis, Apostolos
+and Gounaris, Anastasios},
+title={A context-aware unsupervised predictive maintenance solution for fleet management},
+journal={Journal of Intelligent Information Systems},
+year={2023},
+month={Apr},
+day={01},
+volume={60},
+number={2},
+pages={521-547},
+issn={1573-7675},
+doi={10.1007/s10844-022-00744-2},
+url={https://doi.org/10.1007/s10844-022-00744-2}
+}
+
+
+```
